@@ -44,7 +44,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css"; // Import your global styles
-
+import CartOffcanvas from "./components/CartOffCanvas";
 function App() {
   return (
     <Provider store={store}>
@@ -56,6 +56,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout" element={<CartOffcanvas />} />
         </Routes>
         <Footer />
       </Router>

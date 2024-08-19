@@ -2,7 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/actions/userActions";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faShoppingCart } from "@fortawesome/free-solid-svg-icons";
 import "../App.css";
+import logo from "../logo.svg";
 import {
   Collapse,
   Navbar as ReactstrapNavbar,
@@ -22,16 +25,18 @@ const Navbar = () => {
 
   return (
     <div>
-      <ReactstrapNavbar color="light" light expand="md">
+      <ReactstrapNavbar color="light" light expand="lg">
+        <img src={logo} alt="Logo" style={{ width: "100px", height: "auto" }} />
         <NavbarBrand tag={Link} to="/">
-          E-Shop
+          {" "}
+          Home{" "}
         </NavbarBrand>
         <NavbarToggler onClick={toggle} />
         <Collapse isOpen={isOpen} navbar>
           <Nav className="ml-auto" navbar>
             <NavItem>
               <NavLink tag={Link} to="/cart">
-                Cart
+                <FontAwesomeIcon icon={faShoppingCart} />
               </NavLink>
             </NavItem>
             {user ? (
@@ -50,7 +55,7 @@ const Navbar = () => {
             ) : (
               <NavItem>
                 <NavLink tag={Link} to="/login">
-                  Login
+                  <Button color="light">log in</Button>
                 </NavLink>
               </NavItem>
             )}
