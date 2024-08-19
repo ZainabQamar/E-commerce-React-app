@@ -30,7 +30,7 @@ import classnames from "classnames";
 import "../App.css";
 import ContactSection from "./ContactSection";
 
-// Your existing carousel items
+// Carousel items for the first carousel
 const carouselItems = [
   {
     id: 1,
@@ -47,20 +47,39 @@ const carouselItems = [
   },
 ];
 
+// Testimonials carousel items
+const cardItems = [
+  {
+    title: "John Doe",
+    text: `"This is an amazing product! Highly recommended! I really apperciate your work"`,
+  },
+  {
+    title: "Jane Smith",
+    text: `"Great service and quality. I will definitely buy again.I love your products"`,
+  },
+  {
+    title: "Alice Brown",
+    text: `"Outstanding quality and great experience shopping!I will buy in future also"`,
+  },
+];
+
 const Home = () => {
   const [activeTab, setActiveTab] = useState("1");
   const [carouselActiveIndex, setCarouselActiveIndex] = useState(0);
   const [carouselAnimating, setCarouselAnimating] = useState(false);
   const [modal, setModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState(null); // State to hold selected product
+  const [selectedProduct, setSelectedProduct] = useState(null);
   const dispatch = useDispatch();
 
+  // Tab toggle function
   const toggle = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
+  // Modal toggle function
   const toggleModal = () => setModal(!modal);
 
+  // Carousel control for first carousel (banners)
   const next = () => {
     if (carouselAnimating) return;
     const nextIndex =
@@ -72,11 +91,11 @@ const Home = () => {
 
   const previous = () => {
     if (carouselAnimating) return;
-    const nextIndex =
+    const previousIndex =
       carouselActiveIndex === 0
         ? carouselItems.length - 1
         : carouselActiveIndex - 1;
-    setCarouselActiveIndex(nextIndex);
+    setCarouselActiveIndex(previousIndex);
   };
 
   const goToIndex = (newIndex) => {
@@ -84,11 +103,13 @@ const Home = () => {
     setCarouselActiveIndex(newIndex);
   };
 
+  // Handle product click in cards to display modal
   const handleProductClick = (product) => {
     setSelectedProduct(product);
     toggleModal();
   };
 
+  // Slides for first carousel
   const slides = carouselItems.map((item) => {
     return (
       <CarouselItem
@@ -105,8 +126,57 @@ const Home = () => {
     );
   });
 
+  // Second carousel state and controls
+  const [cardCarouselActiveIndex, setCardCarouselActiveIndex] = useState(0);
+  const [cardCarouselAnimating, setCardCarouselAnimating] = useState(false);
+
+  const cardNext = () => {
+    if (cardCarouselAnimating) return;
+    const nextIndex =
+      cardCarouselActiveIndex === cardItems.length - 1
+        ? 0
+        : cardCarouselActiveIndex + 1;
+    setCardCarouselActiveIndex(nextIndex);
+  };
+
+  const cardPrevious = () => {
+    if (cardCarouselAnimating) return;
+    const previousIndex =
+      cardCarouselActiveIndex === 0
+        ? cardItems.length - 1
+        : cardCarouselActiveIndex - 1;
+    setCardCarouselActiveIndex(previousIndex);
+  };
+
+  const cardGoToIndex = (newIndex) => {
+    if (cardCarouselAnimating) return;
+    setCardCarouselActiveIndex(newIndex);
+  };
+
+  // Slides for second (testimonial) carousel
+  const cardSlides = cardItems.map((item, index) => {
+    return (
+      <CarouselItem
+        key={index}
+        onExiting={() => setCardCarouselAnimating(true)}
+        onExited={() => setCardCarouselAnimating(false)}
+      >
+        <Row className="justify-content-center mb-5 ">
+          <Col md="6 px-5  ">
+            <Card className="text-center size">
+              <CardBody>
+                <CardTitle tag="h5">{item.title}</CardTitle>
+                <CardText>{item.text}</CardText>
+              </CardBody>
+            </Card>
+          </Col>
+        </Row>
+      </CarouselItem>
+    );
+  });
+
+  // Example product data
   const products = [
-    // Your existing products data
     {
       id: 1,
       name: "Product 1",
@@ -257,6 +327,7 @@ const Home = () => {
     <Container>
       <Row>
         <Col>
+          {/* First Carousel - Banners */}
           <Carousel
             activeIndex={carouselActiveIndex}
             next={next}
@@ -280,13 +351,12 @@ const Home = () => {
             />
           </Carousel>
 
+          {/* Tabs for Product Categories */}
           <Nav tabs className="mt-4">
             <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === "1" })}
-                onClick={() => {
-                  toggle("1");
-                }}
+                onClick={() => toggle("1")}
               >
                 New Arrival
               </NavLink>
@@ -294,9 +364,7 @@ const Home = () => {
             <NavItem>
               <NavLink
                 className={classnames({ active: activeTab === "2" })}
-                onClick={() => {
-                  toggle("2");
-                }}
+                onClick={() => toggle("2")}
               >
                 Best Selling
               </NavLink>
@@ -324,7 +392,6 @@ const Home = () => {
                           <CardText>{product.description}</CardText>
                         </CardBody>
                       </Card>
-                      <div></div>
                     </Col>
                   ))}
               </Row>
@@ -358,68 +425,35 @@ const Home = () => {
         </Col>
       </Row>
 
-      {/* Modal for displaying product details */}
+      {/* Modal for Product Details */}
       <Modal isOpen={modal} toggle={toggleModal} size="lg">
         <ModalHeader toggle={toggleModal}>
           {selectedProduct && selectedProduct.name}
         </ModalHeader>
         <ModalBody>
-          <Row>
-            {/* Images Section */}
-            <Col md="6">
-              <div className="modal-images">
-                <CardImg
-                  top
-                  width="100%"
-                  src={selectedProduct && selectedProduct.image}
-                  alt={selectedProduct && selectedProduct.name}
-                />
-                <div className="additional-images mt-2">
-                  {/* Assuming selectedProduct has additionalImages array */}
-                  {selectedProduct &&
-                    selectedProduct.additionalImages &&
-                    selectedProduct.additionalImages.map((img, index) => (
-                      <CardImg
-                        key={index}
-                        src={img}
-                        alt={`Additional Image ${index + 1}`}
-                        className="additional-image"
-                      />
-                    ))}
-                </div>
-              </div>
-            </Col>
-
-            {/* Details Section */}
-            <Col md="6">
-              <div className="modal-details">
-                <CardTitle tag="h5">Product Details</CardTitle>
-                <CardText>
-                  {selectedProduct && selectedProduct.description}
-                  <p>
-                    <h5>
-                      "Autumn Winter Girls Kids Pants Plus Velvet Children's
-                    </h5>
-                    Leggings Cotton <h5>(14 Reviews - 25 Orders)</h5>{" "}
-                    <h4>$15.00$25.00 </h4> New Fashion Autumn Winter Girls Kids
-                    Pants Plus Velvet Children's Leggings Cotton Velvet Elastic
-                    Waist Warm Legging 3-8 Years"
-                  </p>
-                </CardText>
-                {/* Add more details as needed */}
-              </div>
-            </Col>
-          </Row>
+          {selectedProduct && (
+            <>
+              <img
+                src={selectedProduct.image}
+                alt={selectedProduct.name}
+                className="img-fluid mb-4"
+              />
+              <p>{selectedProduct.description}</p>
+            </>
+          )}
         </ModalBody>
         <ModalFooter>
-          <Button
-            color="primary"
-            onClick={() => dispatch(addToCart(selectedProduct))}
-          >
-            Add to Cart
-          </Button>{" "}
           <Button color="secondary" onClick={toggleModal}>
             Close
+          </Button>
+          <Button
+            color="primary"
+            onClick={() => {
+              dispatch(addToCart(selectedProduct));
+              toggleModal();
+            }}
+          >
+            Add to Cart
           </Button>
         </ModalFooter>
       </Modal>
@@ -455,54 +489,118 @@ const Home = () => {
             </div>
           </Col>
         </Row>
-        <h2 className="text-center mb-4">Customer Reviews</h2>
-        <Row>
-          <Col md-3>
-            <Card>
-              <CardBody>
-                <CardTitle tag="h5">John Doe</CardTitle>
-                <CardText>
-                  "This is an amazing product! Highly recommended!Great service
-                  and quality. I Will definitely buy again.I am very excited."
-                </CardText>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md-3>
-            <Card>
-              <CardBody>
-                <CardTitle tag="h5">Jane Smith</CardTitle>
-                <CardText>
-                  "Great service and quality. I Will definitely buy again.I am
-                  very excited to buy it I also want to more buy in future."
-                </CardText>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md-3>
-            <Card>
-              <CardBody>
-                <CardTitle tag="h5">Jane Smith</CardTitle>
-                <CardText>
-                  "Great service and quality. I Will definitely buy again.I am
-                  very excited to buy it I also want to more buy in future."
-                </CardText>
-              </CardBody>
-            </Card>
-          </Col>
-          <Col md-3>
-            <Card>
-              <CardBody>
-                <CardTitle tag="h5">Jane Smith</CardTitle>
-                <CardText>
-                  "Great service and quality. I Will definitely buy again.I am
-                  very excited to buy it I also want to more buy in future."
-                </CardText>
-              </CardBody>
-            </Card>
-          </Col>
-          {/* Add more cards as needed */}
-        </Row>
+        <div>
+          <div className="container mt-5">
+            {/* Product Categories Section */}
+            <div className="row text-center mb-4">
+              <div className="col-6 col-md-2 animate__animated animate__fadeIn">
+                <img
+                  src="./imges/cat.png"
+                  alt="Kids Toys"
+                  className="img-fluid rounded-circle mb-2"
+                />
+                <p>Kids Toys</p>
+              </div>
+              <div className="col-6 col-md-2 animate__animated animate__fadeIn">
+                <img
+                  src="./imges/cat2.png"
+                  alt="Teddy Bear"
+                  className="img-fluid rounded-circle mb-2"
+                />
+                <p>Teddy Bear</p>
+              </div>
+              <div className="col-6 col-md-2 animate__animated animate__fadeIn">
+                <img
+                  src="./imges/cat3.png"
+                  alt="Boys"
+                  className="img-fluid rounded-circle mb-2"
+                />
+                <p>Boys</p>
+              </div>
+              <div className="col-6 col-md-2 animate__animated animate__fadeIn">
+                <img
+                  src="./imges/cat4.png"
+                  alt="Shoes"
+                  className="img-fluid rounded-circle mb-2"
+                />
+                <p>Shoes</p>
+              </div>
+              <div className="col-6 col-md-2 animate__animated animate__fadeIn">
+                <img
+                  src="./imges/cat5.png"
+                  alt="Cribs"
+                  className="img-fluid rounded-circle mb-2"
+                />
+                <p>Cribs</p>
+              </div>
+              <div className="col-6 col-md-2 animate__animated animate__fadeIn">
+                <img
+                  src="./imges/cat6.png"
+                  alt="Wood Toys"
+                  className="img-fluid rounded-circle mb-2"
+                />
+                <p>Wood Toys</p>
+              </div>
+            </div>
+
+            {/* Discount Section */}
+            <div className="row text-center text-white  pink py-4">
+              <div className="col-12 col-sm-3 animate__animated animate__bounceIn">
+                <div className="discount-card">
+                  <h3>10% off</h3>
+                  <p>Orders of $49</p>
+                </div>
+              </div>
+              <div className="col-12 col-sm-3 animate__animated animate__bounceIn">
+                <div className="discount-card">
+                  <h3>15% off</h3>
+                  <p>Orders of $89</p>
+                </div>
+              </div>
+              <div className="col-12 col-sm-3 animate__animated animate__bounceIn">
+                <div className="discount-card">
+                  <h3>20% off</h3>
+                  <p>Orders of $149</p>
+                </div>
+              </div>
+              <div className="col-12 col-sm-3 ">
+                <button className="animate__animated animate__fadeInUp btn-oval">
+                  CODE: KIDIFY-SUMMER
+                </button>
+                <p className="animate__animated animate__fadeInUp">
+                  End at 21:00 – 17 June 2023
+                </p>
+              </div>
+            </div>
+
+            {/* Second Carousel - Testimonials */}
+            <div className="mt-3">
+              <h2 className="text-center">Our Happy Customer</h2>
+              <Carousel
+                activeIndex={cardCarouselActiveIndex}
+                next={cardNext}
+                previous={cardPrevious}
+              >
+                <CarouselIndicators
+                  items={cardItems}
+                  activeIndex={cardCarouselActiveIndex}
+                  onClickHandler={cardGoToIndex}
+                />
+                {cardSlides}
+                <CarouselControl
+                  direction="prev"
+                  directionText="Previous"
+                  onClickHandler={cardPrevious}
+                />
+                <CarouselControl
+                  direction="next"
+                  directionText="Next"
+                  onClickHandler={cardNext}
+                />
+              </Carousel>
+            </div>
+          </div>
+        </div>
       </Container>
     </Container>
   );
